@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KrushiCare – Smart Crop Management</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --green-50: #EAF3DE; --green-100: #C0DD97; --green-200: #97C459;
+    --green-400: #639922; --green-600: #3B6D11; --green-800: #27500A; --green-900: #173404;
+    --amber-50: #FAEEDA; --amber-100: #FAC775; --amber-200: #EF9F27;
+    --amber-400: #BA7517; --amber-600: #854F0B; --amber-800: #633806;
+    --teal-50: #E1F5EE; --teal-100: #9FE1CB; --teal-200: #5DCAA5;
+    --teal-400: #1D9E75; --teal-600: #0F6E56; --teal-800: #085041;
+    --brown: #5C3D1E; --cream: #FAF6EE; --warm-white: #FFFDF8;
+    --text-dark: #1a1a0e; --text-mid: #3d3d25; --text-muted: #7a7a5e;
+    --border: rgba(60,80,20,0.15);
+    --font-display: 'Playfair Display', Georgia, serif;
+    --font-body: 'DM Sans', system-ui, sans-serif;
+    --radius-sm: 6px; --radius-md: 12px; --radius-lg: 20px; --radius-xl: 32px;
+    --shadow-card: 0 2px 20px rgba(39,80,10,0.08), 0 1px 4px rgba(39,80,10,0.05);
+    --transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--cream);
+    color: var(--text-dark);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ===== PAGE SYSTEM ===== */
+  .page { display: none; min-height: 100vh; animation: fadeIn 0.4s ease; }
+  .page.active { display: flex; flex-direction: column; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+  /* ===== SHARED NAV ===== */
+  .nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,246,238,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-logo {
+    display: flex; align-items: center; gap: 10px;
+    font-family: var(--font-display); font-size: 1.4rem; font-weight: 700;
+    color: var(--green-800); cursor: pointer; text-decoration: none;
+  }
+  .nav-logo-icon {
+    width: 36px; height: 36px; background: var(--green-400); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-logo-icon svg { width: 20px; height: 20px; fill: white; }
+  .nav-links { display: flex; align-items: center; gap: 0.5rem; }
+  .nav-btn {
+    font-family: var(--font-body); font-size: 0.875rem; font-weight: 500;
+    padding: 8px 18px; border-radius: var(--radius-md);
+    border: 1.5px solid transparent; cursor: pointer;
+    transition: var(--transition); text-decoration: none; display: inline-flex; align-items: center;
+  }
+  .nav-btn-ghost { color: var(--text-mid); background: transparent; }
+  .nav-btn-ghost:hover { background: var(--green-50); border-color: var(--green-100); }
+  .nav-btn-fill { color: white; background: var(--green-600); border-color: var(--green-600); }
+  .nav-btn-fill:hover { background: var(--green-800); border-color: var(--green-800); }
+
+  /* ===== AUTH PAGES ===== */
+  .auth-bg {
+    flex: 1; display: grid; grid-template-columns: 1fr 1fr; min-height: calc(100vh - 64px);
+  }
+  .auth-left {
+    background: linear-gradient(160deg, var(--green-800) 0%, var(--green-600) 60%, var(--teal-600) 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: 4rem 3rem; position: relative; overflow: hidden;
+  }
+  .auth-left::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(circle at 20% 80%, rgba(250,199,117,0.15) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(93,202,165,0.12) 0%, transparent 50%);
+  }
+  .auth-left-content { position: relative; z-index: 1; }
+  .auth-left h1 {
+    font-family: var(--font-display); font-size: 2.6rem; font-weight: 700;
+    color: white; line-height: 1.2; margin-bottom: 1.2rem;
+  }
+  .auth-left p { color: rgba(255,255,255,0.78); font-size: 1rem; line-height: 1.7; max-width: 360px; }
+  .auth-features { margin-top: 2.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .auth-feature { display: flex; align-items: center; gap: 12px; color: rgba(255,255,255,0.9); font-size: 0.9rem; }
+  .auth-feature-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--amber-200); flex-shrink: 0;
+  }
+  .auth-right {
+    display: flex; align-items: center; justify-content: center; padding: 3rem 2rem;
+    background: var(--warm-white);
+  }
+  .auth-card {
+    width: 100%; max-width: 420px;
+  }
+  .auth-card h2 {
+    font-family: var(--font-display); font-size: 1.9rem; font-weight: 600;
+    color: var(--text-dark); margin-bottom: 0.4rem;
+  }
+  .auth-card p.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+  .form-group { margin-bottom: 1.25rem; }
+  .form-label {
+    display: block; font-size: 0.83rem; font-weight: 500;
+    color: var(--text-mid); margin-bottom: 6px; letter-spacing: 0.02em;
+  }
+  .form-input {
+    width: 100%; padding: 11px 14px; border-radius: var(--radius-md);
+    border: 1.5px solid var(--border); background: var(--cream);
+    font-family: var(--font-body); font-size: 0.95rem; color: var(--text-dark);
+    transition: var(--transition); outline: none;
+  }
+  .form-input:focus { border-color: var(--green-400); background: white; box-shadow: 0 0 0 3px rgba(99,153,34,0.1); }
+  .form-input::placeholder { color: var(--text-muted); }
+  .form-select {
+    width: 100%; padding: 11px 14px; border-radius: var(--radius-md);
+    border: 1.5px solid var(--border); background: var(--cream);
+    font-family: var(--font-body); font-size: 0.95rem; color: var(--text-dark);
+    transition: var(--transition); outline: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7a5e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    cursor: pointer;
+  }
+  .form-select:focus { border-color: var(--green-400); background-color: white; box-shadow: 0 0 0 3px rgba(99,153,34,0.1); }
+  .btn-primary {
+    width: 100%; padding: 13px; background: var(--green-600);
+    color: white; border: none; border-radius: var(--radius-md);
+    font-family: var(--font-body); font-size: 1rem; font-weight: 500;
+    cursor: pointer; transition: var(--transition); letter-spacing: 0.01em;
+  }
+  .btn-primary:hover { background: var(--green-800); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(39,80,10,0.25); }
+  .btn-primary:active { transform: translateY(0); }
+  .auth-switch { margin-top: 1.25rem; text-align: center; font-size: 0.875rem; color: var(--text-muted); }
+  .auth-switch a { color: var(--green-600); font-weight: 500; cursor: pointer; text-decoration: none; }
+  .auth-switch a:hover { color: var(--green-800); }
+  .divider { display: flex; align-items: center; gap: 12px; margin: 1.25rem 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .divider span { font-size: 0.78rem; color: var(--text-muted); white-space: nowrap; }
+
+  /* ===== HOME / DASHBOARD ===== */
+  .hero {
+    background: linear-gradient(135deg, var(--green-800) 0%, var(--green-600) 50%, var(--teal-600) 100%);
+    padding: 4rem 2rem 5rem;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background-image: radial-gradient(ellipse at 70% 50%, rgba(250,199,117,0.18) 0%, transparent 60%),
+      radial-gradient(circle at 10% 80%, rgba(93,202,165,0.15) 0%, transparent 40%);
+  }
+  .hero-inner { position: relative; max-width: 900px; margin: 0 auto; text-align: center; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.92); font-size: 0.8rem; font-weight: 500;
+    padding: 5px 14px; border-radius: 100px; margin-bottom: 1.5rem;
+    letter-spacing: 0.04em; backdrop-filter: blur(8px);
+  }
+  .hero h1 {
+    font-family: var(--font-display); font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 700; color: white; line-height: 1.2; margin-bottom: 1rem;
+  }
+  .hero h1 em { font-style: italic; color: var(--amber-100); }
+  .hero p { color: rgba(255,255,255,0.78); font-size: 1.05rem; max-width: 560px; margin: 0 auto 2rem; line-height: 1.7; }
+  .hero-stats {
+    display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap; margin-top: 3rem;
+  }
+  .hero-stat { text-align: center; }
+  .hero-stat-num {
+    font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: white;
+  }
+  .hero-stat-label { font-size: 0.8rem; color: rgba(255,255,255,0.65); margin-top: 2px; }
+
+  .section { padding: 3rem 2rem; max-width: 1100px; margin: 0 auto; }
+  .section-title {
+    font-family: var(--font-display); font-size: 1.6rem; font-weight: 600;
+    color: var(--text-dark); margin-bottom: 0.4rem;
+  }
+  .section-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem; }
+
+  .modules-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
+  .module-card {
+    background: white; border-radius: var(--radius-lg);
+    border: 1.5px solid var(--border);
+    padding: 1.75rem 1.5rem; cursor: pointer;
+    transition: var(--transition); position: relative; overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .module-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  }
+  .module-card:nth-child(1)::before { background: linear-gradient(90deg, var(--green-400), var(--teal-400)); }
+  .module-card:nth-child(2)::before { background: linear-gradient(90deg, var(--amber-200), var(--amber-400)); }
+  .module-card:nth-child(3)::before { background: linear-gradient(90deg, var(--teal-400), var(--green-400)); }
+  .module-card:nth-child(4)::before { background: linear-gradient(90deg, var(--green-200), var(--green-400)); }
+  .module-card:hover { transform: translateY(-4px); box-shadow: 0 8px 32px rgba(39,80,10,0.14); border-color: var(--green-100); }
+  .module-icon {
+    width: 52px; height: 52px; border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center; margin-bottom: 1rem;
+  }
+  .module-icon svg { width: 26px; height: 26px; }
+  .module-card:nth-child(1) .module-icon { background: var(--green-50); }
+  .module-card:nth-child(1) .module-icon svg { fill: var(--green-600); }
+  .module-card:nth-child(2) .module-icon { background: var(--amber-50); }
+  .module-card:nth-child(2) .module-icon svg { fill: var(--amber-600); }
+  .module-card:nth-child(3) .module-icon { background: var(--teal-50); }
+  .module-card:nth-child(3) .module-icon svg { fill: var(--teal-600); }
+  .module-card:nth-child(4) .module-icon { background: var(--green-50); }
+  .module-card:nth-child(4) .module-icon svg { fill: var(--green-800); }
+  .module-title {
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+    color: var(--text-dark); margin-bottom: 0.5rem;
+  }
+  .module-desc { font-size: 0.875rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1.25rem; }
+  .module-arrow {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; font-weight: 500; color: var(--green-600);
+    transition: var(--transition);
+  }
+  .module-card:hover .module-arrow { gap: 10px; }
+
+  /* ===== TOOL PAGES ===== */
+  .tool-layout {
+    flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    min-height: calc(100vh - 64px);
+  }
+  .tool-form-side {
+    padding: 2.5rem; background: white;
+    border-right: 1px solid var(--border); overflow-y: auto;
+  }
+  .tool-result-side {
+    padding: 2.5rem; background: var(--cream); overflow-y: auto;
+  }
+  .tool-header { margin-bottom: 2rem; }
+  .tool-header-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green-50); color: var(--green-800);
+    font-size: 0.78rem; font-weight: 500; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 0.75rem; border: 1px solid var(--green-100);
+  }
+  .tool-header h2 {
+    font-family: var(--font-display); font-size: 1.6rem; font-weight: 600;
+    color: var(--text-dark); margin-bottom: 0.4rem;
+  }
+  .tool-header p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; }
+  .back-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.85rem; color: var(--text-muted); cursor: pointer;
+    margin-bottom: 1.5rem; border: none; background: none; padding: 0;
+    font-family: var(--font-body); transition: var(--transition);
+  }
+  .back-btn:hover { color: var(--green-600); }
+  .back-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 2px dashed var(--green-200); border-radius: var(--radius-lg);
+    padding: 2.5rem; text-align: center; cursor: pointer;
+    transition: var(--transition); background: var(--green-50); position: relative;
+    overflow: hidden;
+  }
+  .upload-zone:hover { border-color: var(--green-400); background: #e5f0d5; }
+  .upload-zone.dragging { border-color: var(--green-600); background: #d8ebc4; }
+  .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .upload-icon { width: 48px; height: 48px; margin: 0 auto 1rem; }
+  .upload-icon svg { width: 100%; height: 100%; stroke: var(--green-400); fill: none; }
+  .upload-zone h4 { font-size: 0.95rem; font-weight: 500; color: var(--text-mid); margin-bottom: 0.3rem; }
+  .upload-zone p { font-size: 0.8rem; color: var(--text-muted); }
+  .upload-preview {
+    margin-top: 1rem; display: none; align-items: center; gap: 12px;
+    background: white; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 10px 14px;
+  }
+  .upload-preview.visible { display: flex; }
+  .upload-preview img { width: 48px; height: 48px; object-fit: cover; border-radius: var(--radius-sm); }
+  .upload-preview-info { flex: 1; }
+  .upload-preview-name { font-size: 0.85rem; font-weight: 500; color: var(--text-dark); }
+  .upload-preview-size { font-size: 0.77rem; color: var(--text-muted); }
+
+  /* Sliders */
+  .range-group { margin-bottom: 1.5rem; }
+  .range-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .range-label { font-size: 0.83rem; font-weight: 500; color: var(--text-mid); }
+  .range-value {
+    font-size: 0.9rem; font-weight: 600; color: var(--green-700, var(--green-600));
+    background: var(--green-50); padding: 2px 10px; border-radius: 100px;
+    border: 1px solid var(--green-100);
+  }
+  input[type=range] {
+    width: 100%; height: 6px; border-radius: 100px;
+    -webkit-appearance: none; appearance: none;
+    background: var(--green-100); outline: none; cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px;
+    border-radius: 50%; background: var(--green-600);
+    cursor: pointer; box-shadow: 0 0 0 3px rgba(59,109,17,0.15);
+    transition: var(--transition);
+  }
+  input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+  /* Result area */
+  .result-placeholder {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 3rem; min-height: 400px;
+    border: 2px dashed var(--border); border-radius: var(--radius-xl);
+    background: white;
+  }
+  .result-placeholder-icon { width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.35; }
+  .result-placeholder h4 { font-family: var(--font-display); font-size: 1.1rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+  .result-placeholder p { font-size: 0.85rem; color: var(--text-muted); }
+  .result-card {
+    background: white; border-radius: var(--radius-lg);
+    border: 1.5px solid var(--border); padding: 1.75rem;
+    box-shadow: var(--shadow-card); margin-bottom: 1rem;
+  }
+  .result-card.success-card { border-color: var(--teal-200); background: #f0fbf7; }
+  .result-card.warning-card { border-color: var(--amber-100); background: var(--amber-50); }
+  .result-tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.75rem; font-weight: 500; padding: 4px 12px;
+    border-radius: 100px; margin-bottom: 0.75rem;
+  }
+  .tag-success { background: var(--teal-50); color: var(--teal-800); border: 1px solid var(--teal-100); }
+  .tag-warning { background: var(--amber-50); color: var(--amber-800); border: 1px solid var(--amber-100); }
+  .tag-info { background: var(--green-50); color: var(--green-800); border: 1px solid var(--green-100); }
+  .result-title { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.5rem; }
+  .result-body { font-size: 0.88rem; color: var(--text-mid); line-height: 1.7; }
+  .result-steps { list-style: none; margin-top: 1rem; }
+  .result-steps li {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 0.875rem; color: var(--text-mid); padding: 8px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.05); line-height: 1.5;
+  }
+  .result-steps li:last-child { border-bottom: none; }
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--green-400); color: white;
+    font-size: 0.72rem; font-weight: 600; display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .rotation-chain {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 0.75rem;
+  }
+  .rotation-crop {
+    background: white; border: 1.5px solid var(--green-200);
+    padding: 8px 16px; border-radius: var(--radius-md);
+    font-size: 0.875rem; font-weight: 500; color: var(--green-800);
+  }
+  .rotation-arrow { color: var(--text-muted); font-size: 1.1rem; }
+  .loading-anim {
+    display: flex; gap: 6px; align-items: center; justify-content: center; padding: 2rem;
+  }
+  .loading-dot {
+    width: 10px; height: 10px; border-radius: 50%; background: var(--green-400);
+    animation: bounce 0.6s ease infinite;
+  }
+  .loading-dot:nth-child(2) { animation-delay: 0.15s; }
+  .loading-dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-10px); } }
+
+  /* ===== LAND ANALYSIS SPECIFIC ===== */
+  .soil-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+  .soil-option {
+    padding: 12px 8px; border-radius: var(--radius-md); border: 2px solid var(--border);
+    text-align: center; cursor: pointer; transition: var(--transition); background: var(--cream);
+  }
+  .soil-option:hover { border-color: var(--green-200); background: var(--green-50); }
+  .soil-option.selected { border-color: var(--green-400); background: var(--green-50); }
+  .soil-option .soil-icon { font-size: 1.5rem; margin-bottom: 4px; }
+  .soil-option .soil-name { font-size: 0.78rem; font-weight: 500; color: var(--text-mid); }
+
+  /* ===== CONFIDENCE BAR ===== */
+  .confidence-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+  .confidence-label { font-size: 0.8rem; color: var(--text-muted); min-width: 90px; }
+  .confidence-bar-wrap { flex: 1; height: 8px; background: var(--green-50); border-radius: 100px; overflow: hidden; }
+  .confidence-bar-fill { height: 100%; border-radius: 100px; background: var(--green-400); transition: width 1s ease; }
+  .confidence-pct { font-size: 0.8rem; font-weight: 500; color: var(--green-800); min-width: 36px; text-align: right; }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: var(--green-900); color: rgba(255,255,255,0.5);
+    text-align: center; padding: 1.25rem 2rem;
+    font-size: 0.8rem;
+  }
+  .footer span { color: rgba(255,255,255,0.8); font-weight: 500; }
+
+  /* ===== UPLOAD HINT & DIVIDER ===== */
+  .upload-hint {
+    margin-top: 10px; font-size: 0.8rem; color: var(--text-muted);
+    background: var(--green-50); border: 1px solid var(--green-100);
+    border-radius: var(--radius-sm); padding: 8px 12px; line-height: 1.5;
+  }
+  .upload-hint span { font-weight: 500; color: var(--green-600); }
+  .form-divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 1.5rem 0 1.25rem; font-size: 0.78rem; font-weight: 600;
+    color: var(--text-muted); letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .form-divider::before, .form-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .auth-bg { grid-template-columns: 1fr; }
+    .auth-left { display: none; }
+    .tool-layout { grid-template-columns: 1fr; }
+    .tool-form-side { border-right: none; border-bottom: 1px solid var(--border); }
+    .nav-links .nav-btn-ghost { display: none; }
+    .hero-stats { gap: 2rem; }
+    .modules-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .modules-grid { grid-template-columns: 1fr; }
+    .soil-selector { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== LOGIN PAGE ==================== -->
+<div id="page-login" class="page active">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-login')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-fill" onclick="showPage('page-signup')">Create Account</button>
+    </div>
+  </nav>
+  <div class="auth-bg">
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <h1>Smart Farming<br>Starts Here</h1>
+        <p>AI-powered crop management that helps you detect diseases, analyze soil, and maximize yield — all in one platform.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-feature-dot"></div>Leaf disease detection</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div>Crop recommendation</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div>Crop rotation planning</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2>Welcome back</h2>
+        <p class="subtitle">Sign in to your KrushiCare account</p>
+        
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input type="email" id="login-email" class="form-input" placeholder="farmer@example.com" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="login-password" class="form-input" placeholder="••••••••" />
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;margin-bottom:1.25rem;">
+          <a href="#" style="font-size:0.83rem;color:var(--green-600);text-decoration:none;">Forgot password?</a>
+        </div>
+
+        <button type="button" class="btn-primary" onclick="handleLogin()">Sign In</button>
+        
+        <div class="divider"><span>or continue with</span></div>
+        <button type="button" class="btn-primary" style="background:white;color:var(--text-dark);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;gap:10px;" onmouseover="this.style.background='var(--cream)'" onmouseout="this.style.background='white'">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          Sign in with Google
+        </button>
+        <div class="auth-switch">Don't have an account? <a onclick="showPage('page-signup')" style="cursor:pointer;">Sign up</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SIGNUP PAGE ==================== -->
+<div id="page-signup" class="page">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-login')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-ghost" onclick="showPage('page-login')">Already have an account?</button>
+      <button class="nav-btn nav-btn-fill" onclick="showPage('page-login')">Sign In</button>
+    </div>
+  </nav>
+  <div class="auth-bg">
+    <div class="auth-left">
+      <div class="auth-left-content">
+        <h1>Join Thousands of<br><em>Smart Farmers</em></h1>
+        <p>Get access to AI-powered tools that help you make better decisions for your crops and land.</p>
+        <div class="auth-features">
+          <div class="auth-feature"><div class="auth-feature-dot"></div>Free to get started</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div>PlantVillage-trained models</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div>Supports 38+ crop types</div>
+          <div class="auth-feature"><div class="auth-feature-dot"></div>Instant disease diagnosis</div>
+        </div>
+      </div>
+    </div>
+    <div class="auth-right">
+      <div class="auth-card">
+        <h2>Create account</h2>
+        <p class="subtitle">Start your smart farming journey today</p>
+        
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;">
+          <div class="form-group">
+            <label class="form-label">First name</label>
+            <input type="text" id="signup-first-name" class="form-input" placeholder="Ramesh" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last name</label>
+            <input type="text" id="signup-last-name" class="form-input" placeholder="Patel" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input type="email" id="signup-email" class="form-input" placeholder="farmer@example.com" required />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Phone number</label>
+          <input type="tel" id="signup-phone" class="form-input" placeholder="+91 98765 43210" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">State / Region</label>
+          <select id="signup-state" class="form-select">
+            <option value="">Select your state</option>
+            <option>Madhya Pradesh</option>
+            <option>Maharashtra</option>
+            <option>Punjab</option>
+            <option>Uttar Pradesh</option>
+            <option>Gujarat</option>
+            <option>Rajasthan</option>
+            <option>Karnataka</option>
+            <option>Andhra Pradesh</option>
+            <option>Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input type="password" id="signup-password" class="form-input" placeholder="Min. 8 characters" required />
+        </div>
+
+        <button type="button" class="btn-primary" id="signup-btn">Create Account</button>
+        
+        <div class="auth-switch">Already have an account? <a onclick="showPage('page-login')" style="cursor:pointer; color:var(--green-600); font-weight:600;">Sign in</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ==================== HOME / DASHBOARD ==================== -->
+<div id="page-home" class="page">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-home')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-fill" onclick="showPage('page-login')">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <h1>Welcome to <em>KrushiCare</em></h1>
+      <p style="color:rgba(255,255,255,0.95);font-size:1.25rem;font-weight:600;font-style:italic;margin-bottom:0.6rem;letter-spacing:0.01em;">"One photo. Every answer."</p>
+      <p style="color:rgba(255,255,255,0.68);font-size:0.92rem;margin-bottom:0;line-height:1.6;">Crop disease, soil health, farm problems — <span style="color:rgba(255,255,255,0.9);font-weight:500;">AI handles it all.</span> 🌿</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">Choose a Module</div>
+    <div class="modules-grid">
+      <div class="module-card" onclick="showPage('page-leaf')">
+        <div class="module-icon">
+          <svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 19.93A1 1 0 0 0 5 21c4.5-1 8-4 9-8 .5-2 .5-4 .5-4s2 1.5 2 5c0 3.5-3 6-3 6h2c2-2 3-4.5 3-7 0-4.5-3-8-3-8 0 0 .5 1 .5 2-2-1.5-4-1-4-1z"/></svg>
+        </div>
+        <div class="module-title">Leaf Disease Detection</div>
+        <div class="module-desc">Upload a leaf image and our CNN model will identify the disease and provide treatment recommendations.</div>
+        <div class="module-arrow">Detect disease <span>→</span></div>
+      </div>
+      <div class="module-card" onclick="showPage('page-crop')">
+        <div class="module-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2a1 1 0 0 1 1 1v3.07A7 7 0 0 1 19 13c0 3.87-3.13 7-7 7s-7-3.13-7-7a7 7 0 0 1 6-6.93V3a1 1 0 0 1 1-1zM8 10.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h2v2a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-2h2a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-2V8.5a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v2z"/></svg>
+        </div>
+        <div class="module-title">Crop Recommendation</div>
+        <div class="module-desc">Enter soil and climate parameters to get ML-powered crop recommendations suited for your land.</div>
+        <div class="module-arrow">Get recommendations <span>→</span></div>
+      </div>
+      <div class="module-card" onclick="showPage('page-rotation')">
+        <div class="module-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8zM12 20v2A10 10 0 0 0 22 12h-2a8 8 0 0 1-8 8z"/><path d="M4 12H2a10 10 0 0 0 10 10v-2a8 8 0 0 1-8-8zM22 12h-2a8 8 0 0 1-8 8v2a10 10 0 0 0 10-10z" opacity=".4"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="module-title">Crop Rotation Plan</div>
+        <div class="module-desc">Generate an optimal seasonal crop rotation plan to maximize yield and maintain soil health.</div>
+        <div class="module-arrow">Plan rotation <span>→</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Built with ❤️ for Indian farmers · <span>KrushiCare</span> © 2025 · Powered by TensorFlow & Scikit-learn
+  </div>
+</div>
+
+<!-- ==================== LEAF DISEASE PAGE ==================== -->
+<div id="page-leaf" class="page">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-home')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-ghost" onclick="showPage('page-home')">Dashboard</button>
+    </div>
+  </nav>
+  <div class="tool-layout">
+    <div class="tool-form-side">
+      <button class="back-btn" onclick="showPage('page-home')">
+        <svg viewBox="0 0 24 24" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to Dashboard
+      </button>
+      <div class="tool-header">
+        <div class="tool-header-badge">🌿 Deep Learning · CNN Model</div>
+        <h2>Leaf Disease Detection</h2>
+        <p>Upload a clear photo of your plant leaf. Our CNN model trained on the PlantVillage dataset will diagnose the disease.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Leaf Image</label>
+        <div class="upload-zone" id="leaf-upload-zone">
+          <input type="file" accept="image/*" id="leaf-file-input" onchange="handleLeafUpload(event)" />
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h4>Drop your leaf image here</h4>
+          <p>or click to browse · JPG, PNG, WEBP up to 10MB</p>
+        </div>
+        <div class="upload-preview" id="leaf-preview">
+          <img id="leaf-preview-img" src="" alt="" />
+          <div class="upload-preview-info">
+            <div class="upload-preview-name" id="leaf-preview-name">leaf_image.jpg</div>
+            <div class="upload-preview-size" id="leaf-preview-size">2.4 MB</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Crop Type (optional)</label>
+        <select class="form-select" id="leaf-crop-type">
+          <option value="">Auto-detect from image</option>
+          <option>Tomato</option>
+          <option>Potato</option>
+          <option>Corn / Maize</option>
+          <option>Rice</option>
+          <option>Wheat</option>
+          <option>Soybean</option>
+          <option>Grape</option>
+          <option>Apple</option>
+          <option>Pepper</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Symptom Description (optional)</label>
+        <textarea class="form-input" rows="3" placeholder="e.g. Yellow spots on leaves, wilting, discoloration..." style="resize:vertical;"></textarea>
+      </div>
+
+      <button class="btn-primary" onclick="runLeafDetection()">🔍 Analyse Leaf</button>
+    </div>
+    <div class="tool-result-side" id="leaf-result-area">
+      <div class="result-placeholder">
+        <div class="result-placeholder-icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#639922" stroke-width="2"><path d="M32 8C20 8 12 16 12 26c0 8 5 14 12 18l8 12 8-12c7-4 12-10 12-18 0-10-8-18-20-18z"/><circle cx="32" cy="26" r="6"/></svg>
+        </div>
+        <h4>No analysis yet</h4>
+        <p>Upload a leaf image and click "Analyse Leaf" to get your diagnosis</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CROP RECOMMENDATION PAGE ==================== -->
+<div id="page-crop" class="page">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-home')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-ghost" onclick="showPage('page-home')">Dashboard</button>
+    </div>
+  </nav>
+  <div class="tool-layout">
+    <div class="tool-form-side">
+      <button class="back-btn" onclick="showPage('page-home')">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to Dashboard
+      </button>
+      <div class="tool-header">
+        <div class="tool-header-badge">🌾 Machine Learning · Random Forest</div>
+        <h2>Crop Recommendation</h2>
+        <p>Upload your field/soil image and enter climate parameters. The ML model uses both visual and numerical data for accurate crop recommendations.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Field / Soil Image</label>
+        <div class="upload-zone" id="crop-upload-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event,'crop')">
+          <input type="file" accept="image/*" id="crop-file-input" onchange="handleGenericUpload(event,'crop')" />
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <h4>Upload a photo of your field or soil</h4>
+          <p>Aerial view, topsoil close-up, or standing crop photo · JPG, PNG up to 10MB</p>
+        </div>
+        <div class="upload-preview" id="crop-preview">
+          <img id="crop-preview-img" src="" alt="" />
+          <div class="upload-preview-info">
+            <div class="upload-preview-name" id="crop-preview-name"></div>
+            <div class="upload-preview-size" id="crop-preview-size"></div>
+          </div>
+          <button onclick="clearUpload('crop')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">✕</button>
+        </div>
+        <div class="upload-hint">📷 <span>Tip:</span> A clear soil surface photo or field overview helps the model detect soil colour, texture and moisture visually.</div>
+      </div>
+
+      <div class="form-divider"><span>+ Numerical Parameters</span></div>
+
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Nitrogen (N) level</span>
+          <span class="range-value" id="n-val">60 mg/kg</span>
+        </div>
+        <input type="range" min="0" max="140" value="60" id="n-range" oninput="document.getElementById('n-val').textContent=this.value+' mg/kg'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Phosphorus (P)</span>
+          <span class="range-value" id="p-val">50 mg/kg</span>
+        </div>
+        <input type="range" min="5" max="145" value="50" id="p-range" oninput="document.getElementById('p-val').textContent=this.value+' mg/kg'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Potassium (K)</span>
+          <span class="range-value" id="k-val">45 mg/kg</span>
+        </div>
+        <input type="range" min="5" max="205" value="45" id="k-range" oninput="document.getElementById('k-val').textContent=this.value+' mg/kg'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Soil pH</span>
+          <span class="range-value" id="ph-val">6.8</span>
+        </div>
+        <input type="range" min="35" max="95" value="68" id="ph-range" oninput="document.getElementById('ph-val').textContent=(this.value/10).toFixed(1)" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Temperature</span>
+          <span class="range-value" id="temp-val">26 °C</span>
+        </div>
+        <input type="range" min="8" max="45" value="26" id="temp-range" oninput="document.getElementById('temp-val').textContent=this.value+' °C'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Humidity</span>
+          <span class="range-value" id="hum-val">70%</span>
+        </div>
+        <input type="range" min="10" max="100" value="70" id="hum-range" oninput="document.getElementById('hum-val').textContent=this.value+'%'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Annual Rainfall</span>
+          <span class="range-value" id="rain-val">900 mm</span>
+        </div>
+        <input type="range" min="20" max="2500" value="900" id="rain-range" oninput="document.getElementById('rain-val').textContent=this.value+' mm'" />
+      </div>
+
+      <button class="btn-primary" onclick="runCropRecommendation()">🌾 Recommend Crops</button>
+    </div>
+    <div class="tool-result-side" id="crop-result-area">
+      <div class="result-placeholder">
+        <div class="result-placeholder-icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#BA7517" stroke-width="2"><rect x="8" y="28" width="12" height="28" rx="2"/><rect x="26" y="20" width="12" height="36" rx="2"/><rect x="44" y="12" width="12" height="44" rx="2"/></svg>
+        </div>
+        <h4>Awaiting image + parameters</h4>
+        <p>Upload a field photo, adjust the sliders to match your soil conditions, and click "Recommend Crops"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CROP ROTATION PAGE ==================== -->
+<div id="page-rotation" class="page">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-home')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-ghost" onclick="showPage('page-home')">Dashboard</button>
+    </div>
+  </nav>
+  <div class="tool-layout">
+    <div class="tool-form-side">
+      <button class="back-btn" onclick="showPage('page-home')">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to Dashboard
+      </button>
+      <div class="tool-header">
+        <div class="tool-header-badge">🔄 Smart Planning · ML-Optimised</div>
+        <h2>Crop Rotation Plan</h2>
+        <p>Upload an image of your current standing crop or harvested field, and fill in the details below to get a smart seasonal rotation plan.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Current Crop / Field Image</label>
+        <div class="upload-zone" id="rot-upload-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event,'rot')">
+          <input type="file" accept="image/*" id="rot-file-input" onchange="handleGenericUpload(event,'rot')" />
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <h4>Photo of your standing or harvested crop</h4>
+          <p>Helps identify crop health, growth stage and soil condition · JPG, PNG up to 10MB</p>
+        </div>
+        <div class="upload-preview" id="rot-preview">
+          <img id="rot-preview-img" src="" alt="" />
+          <div class="upload-preview-info">
+            <div class="upload-preview-name" id="rot-preview-name"></div>
+            <div class="upload-preview-size" id="rot-preview-size"></div>
+          </div>
+          <button onclick="clearUpload('rot')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">✕</button>
+        </div>
+        <div class="upload-hint">📷 <span>Tip:</span> A photo of the field after harvest or current standing crop helps assess residue level and plan the next season.</div>
+      </div>
+
+      <div class="form-divider"><span>+ Crop & Soil Details</span></div>
+
+      <div class="form-group">
+        <label class="form-label">Current / Last Grown Crop</label>
+        <select class="form-select" id="rot-current">
+          <option>Wheat</option>
+          <option>Rice</option>
+          <option>Maize / Corn</option>
+          <option>Soybean</option>
+          <option>Cotton</option>
+          <option>Sugarcane</option>
+          <option>Pulses (Lentil / Moong)</option>
+          <option>Tomato</option>
+          <option>Potato</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Soil Type</label>
+        <select class="form-select" id="rot-soil">
+          <option>Black (Regur)</option>
+          <option>Red Laterite</option>
+          <option>Alluvial</option>
+          <option>Sandy Loam</option>
+          <option>Clay Loam</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Number of Seasons</label>
+        <select class="form-select" id="rot-seasons">
+          <option value="3">3 Seasons (1 year)</option>
+          <option value="4">4 Seasons (Kharif–Rabi–Zaid cycle)</option>
+          <option value="6">6 Seasons (2 years)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Primary Goal</label>
+        <select class="form-select" id="rot-goal">
+          <option>Maximise yield</option>
+          <option>Restore soil fertility</option>
+          <option>Reduce input costs</option>
+          <option>Pest & disease control</option>
+          <option>Water conservation</option>
+        </select>
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Land area</span>
+          <span class="range-value" id="rot-area-val">5 acres</span>
+        </div>
+        <input type="range" min="1" max="50" value="5" oninput="document.getElementById('rot-area-val').textContent=this.value+' acres'" />
+      </div>
+
+      <button class="btn-primary" onclick="runRotationPlan()">🔄 Generate Rotation Plan</button>
+    </div>
+    <div class="tool-result-side" id="rotation-result-area">
+      <div class="result-placeholder">
+        <div class="result-placeholder-icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#1D9E75" stroke-width="2"><circle cx="32" cy="32" r="24"/><path d="M32 8v8M32 48v8M8 32h8M48 32h8"/><circle cx="32" cy="32" r="8"/></svg>
+        </div>
+        <h4>No rotation plan yet</h4>
+        <p>Upload your crop/field image, fill in the details, then click "Generate Rotation Plan"</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LAND ANALYSIS PAGE ==================== -->
+<div id="page-land" class="page">
+  <nav class="nav">
+    <a class="nav-logo" href="#" onclick="showPage('page-home')">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C8 2 5 5 5 8.5c0 3 2 5.5 4.5 7L12 22l2.5-6.5C17 14 19 11.5 19 8.5 19 5 16 2 12 2z"/></svg>
+      </div>
+      KrushiCare
+    </a>
+    <div class="nav-links">
+      <button class="nav-btn nav-btn-ghost" onclick="showPage('page-home')">Dashboard</button>
+    </div>
+  </nav>
+  <div class="tool-layout">
+    <div class="tool-form-side">
+      <button class="back-btn" onclick="showPage('page-home')">
+        <svg viewBox="0 0 24 24" stroke-width="2" fill="none"><path d="M15 18l-6-6 6-6"/></svg>
+        Back to Dashboard
+      </button>
+      <div class="tool-header">
+        <div class="tool-header-badge">🌍 Soil Intelligence · Multi-parameter</div>
+        <h2>Land Analysis</h2>
+        <p>Upload a photo of your land/soil and provide the parameters below. The AI will visually analyse soil colour, texture and condition alongside your inputs.</p>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Upload Land / Soil Image</label>
+        <div class="upload-zone" id="land-upload-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event,'land')">
+          <input type="file" accept="image/*" id="land-file-input" onchange="handleGenericUpload(event,'land')" />
+          <div class="upload-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          </div>
+          <h4>Upload a soil or land surface photo</h4>
+          <p>Close-up of soil, dry/wet patches, or full field view · JPG, PNG up to 10MB</p>
+        </div>
+        <div class="upload-preview" id="land-preview">
+          <img id="land-preview-img" src="" alt="" />
+          <div class="upload-preview-info">
+            <div class="upload-preview-name" id="land-preview-name"></div>
+            <div class="upload-preview-size" id="land-preview-size"></div>
+          </div>
+          <button onclick="clearUpload('land')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">✕</button>
+        </div>
+        <div class="upload-hint">📷 <span>Tip:</span> A close-up soil photo helps detect colour (red/black/sandy), cracking patterns, and moisture visually — improving analysis accuracy.</div>
+      </div>
+
+      <div class="form-divider"><span>+ Land Parameters</span></div>
+
+      <div class="form-group">
+        <label class="form-label">Select Soil Type</label>
+        <div class="soil-selector" id="soil-selector">
+          <div class="soil-option selected" onclick="selectSoil(this,'Black')"><div class="soil-icon">🟫</div><div class="soil-name">Black</div></div>
+          <div class="soil-option" onclick="selectSoil(this,'Red')"><div class="soil-icon">🟥</div><div class="soil-name">Red</div></div>
+          <div class="soil-option" onclick="selectSoil(this,'Alluvial')"><div class="soil-icon">🟨</div><div class="soil-name">Alluvial</div></div>
+          <div class="soil-option" onclick="selectSoil(this,'Sandy')"><div class="soil-icon">⬜</div><div class="soil-name">Sandy</div></div>
+          <div class="soil-option" onclick="selectSoil(this,'Clay')"><div class="soil-icon">🟦</div><div class="soil-name">Clay</div></div>
+          <div class="soil-option" onclick="selectSoil(this,'Loamy')"><div class="soil-icon">🟩</div><div class="soil-name">Loamy</div></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Location / District</label>
+        <input type="text" class="form-input" placeholder="e.g. Indore, Madhya Pradesh" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Land Area (acres)</label>
+        <input type="number" class="form-input" placeholder="e.g. 5" min="0.5" step="0.5" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Water Source</label>
+        <select class="form-select">
+          <option>Borewell / Tube well</option>
+          <option>Canal irrigation</option>
+          <option>Rain-fed only</option>
+          <option>River / Pond</option>
+          <option>Drip irrigation</option>
+        </select>
+      </div>
+
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Organic matter %</span>
+          <span class="range-value" id="om-val">1.8%</span>
+        </div>
+        <input type="range" min="0" max="60" value="18" oninput="document.getElementById('om-val').textContent=(this.value/10).toFixed(1)+'%'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Soil moisture</span>
+          <span class="range-value" id="sm-val">42%</span>
+        </div>
+        <input type="range" min="0" max="100" value="42" oninput="document.getElementById('sm-val').textContent=this.value+'%'" />
+      </div>
+      <div class="range-group">
+        <div class="range-header">
+          <span class="range-label">Soil pH</span>
+          <span class="range-value" id="land-ph-val">7.0</span>
+        </div>
+        <input type="range" min="35" max="95" value="70" oninput="document.getElementById('land-ph-val').textContent=(this.value/10).toFixed(1)" />
+      </div>
+
+      <button class="btn-primary" onclick="runLandAnalysis()">🌍 Analyse Land</button>
+    </div>
+    <div class="tool-result-side" id="land-result-area">
+      <div class="result-placeholder">
+        <div class="result-placeholder-icon">
+          <svg viewBox="0 0 64 64" fill="none" stroke="#639922" stroke-width="2"><rect x="4" y="36" width="56" height="20" rx="4"/><path d="M4 36c0-16 8-28 28-28s28 12 28 28"/><line x1="32" y1="8" x2="32" y2="36"/></svg>
+        </div>
+        <h4>Ready to analyse</h4>
+        <p>Upload a soil/land photo, fill in the parameters, and click "Analyse Land" for a full report</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== GENERIC IMAGE UPLOAD (crop, rot, land) =====
+function handleGenericUpload(e, prefix) {
+  const file = e.target.files[0]; if (!file) return;
+  showUploadPreview(prefix, file);
+}
+function handleDrop(e, prefix) {
+  e.preventDefault();
+  document.getElementById(prefix+'-upload-zone').classList.remove('dragging');
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  showUploadPreview(prefix, file);
+}
+function showUploadPreview(prefix, file) {
+  const preview = document.getElementById(prefix+'-preview');
+  const img = document.getElementById(prefix+'-preview-img');
+  const name = document.getElementById(prefix+'-preview-name');
+  const size = document.getElementById(prefix+'-preview-size');
+  img.src = URL.createObjectURL(file);
+  name.textContent = file.name;
+  size.textContent = (file.size/1024/1024).toFixed(2)+' MB';
+  preview.classList.add('visible');
+}
+function clearUpload(prefix) {
+  document.getElementById(prefix+'-preview').classList.remove('visible');
+  document.getElementById(prefix+'-file-input').value = '';
+}
+
+// ===== PAGE NAVIGATION =====
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ===== LEAF DETECTION =====
+function handleLeafUpload(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const preview = document.getElementById('leaf-preview');
+  const img = document.getElementById('leaf-preview-img');
+  const name = document.getElementById('leaf-preview-name');
+  const size = document.getElementById('leaf-preview-size');
+  img.src = URL.createObjectURL(file);
+  name.textContent = file.name;
+  size.textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+  preview.classList.add('visible');
+}
+
+function runLeafDetection() {
+  const area = document.getElementById('leaf-result-area');
+  area.innerHTML = '<div class="loading-anim"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><p style="text-align:center;color:var(--text-muted);font-size:0.85rem;">Analysing leaf image with CNN model...</p>';
+  setTimeout(() => {
+    area.innerHTML = `
+      <div class="result-card success-card">
+        <div class="result-tag tag-warning">⚠️ Disease Detected · Confidence 91.4%</div>
+        <div class="result-title">Early Blight (Alternaria solani)</div>
+        <div class="result-body">The leaf shows dark brown concentric ring lesions typical of Early Blight caused by the fungal pathogen <em>Alternaria solani</em>. Affected tissue shows necrosis with a yellow halo border.</div>
+      </div>
+      <div class="result-card">
+        <div class="result-tag tag-info">📊 Model Confidence</div>
+        <div style="margin-top:0.5rem;">
+          <div class="confidence-row"><span class="confidence-label">Early Blight</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:91%"></div></div><span class="confidence-pct">91%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Late Blight</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:6%;background:var(--amber-400)"></div></div><span class="confidence-pct">6%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Healthy</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:3%;background:var(--teal-400)"></div></div><span class="confidence-pct">3%</span></div>
+        </div>
+      </div>
+      <div class="result-card">
+        <div class="result-tag tag-success">✅ Treatment Plan</div>
+        <ul class="result-steps">
+          <li><div class="step-num">1</div>Remove and destroy all infected leaves immediately to prevent spread.</li>
+          <li><div class="step-num">2</div>Apply <strong>Mancozeb 75% WP</strong> (2.5 g/L water) spray every 7–10 days.</li>
+          <li><div class="step-num">3</div>Ensure good air circulation between plants; avoid overhead irrigation.</li>
+          <li><div class="step-num">4</div>Apply copper-based fungicide as a preventive measure in surrounding plants.</li>
+          <li><div class="step-num">5</div>Monitor crop weekly; repeat treatment if symptoms persist after 2 sprays.</li>
+        </ul>
+      </div>
+    `;
+  }, 2200);
+}
+
+// ===== CROP RECOMMENDATION =====
+function runCropRecommendation() {
+  const area = document.getElementById('crop-result-area');
+  area.innerHTML = '<div class="loading-anim"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><p style="text-align:center;color:var(--text-muted);font-size:0.85rem;">Analysing field image + soil parameters with Random Forest model...</p>';
+  setTimeout(() => {
+    area.innerHTML = `
+      <div class="result-card success-card">
+        <div class="result-tag tag-success">🌾 Top Recommendation</div>
+        <div class="result-title">Wheat (Triticum aestivum)</div>
+        <div class="result-body">Wheat is highly suitable for your soil conditions. The pH level of 6.8 and potassium levels are optimal for good grain development. Moderate nitrogen availability suits wheat's growth pattern.</div>
+      </div>
+      <div class="result-card">
+        <div class="result-tag tag-info">📊 Suitability Scores</div>
+        <div style="margin-top:0.5rem;">
+          <div class="confidence-row"><span class="confidence-label">Wheat</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:88%"></div></div><span class="confidence-pct">88%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Chickpea</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:79%"></div></div><span class="confidence-pct">79%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Mustard</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:72%"></div></div><span class="confidence-pct">72%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Soybean</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:61%;background:var(--amber-400)"></div></div><span class="confidence-pct">61%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Rice</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:38%;background:var(--amber-200)"></div></div><span class="confidence-pct">38%</span></div>
+        </div>
+      </div>
+      <div class="result-card">
+        <div class="result-tag tag-info">💡 Agronomic Tips</div>
+        <ul class="result-steps">
+          <li><div class="step-num">1</div>Sow between <strong>October 15 – November 15</strong> for optimal Rabi season yield.</li>
+          <li><div class="step-num">2</div>Apply 120 kg N/ha in split doses: 50% at sowing + 50% at first irrigation.</li>
+          <li><div class="step-num">3</div>Ensure irrigation at crown root initiation (CRI), jointing, and grain filling stages.</li>
+          <li><div class="step-num">4</div>Recommended variety for your region: <strong>GW 322</strong> or <strong>HI 8498</strong>.</li>
+        </ul>
+      </div>
+    `;
+  }, 2000);
+}
+
+// ===== ROTATION PLAN =====
+function runRotationPlan() {
+  const area = document.getElementById('rotation-result-area');
+  const current = document.getElementById('rot-current').value;
+  area.innerHTML = '<div class="loading-anim"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><p style="text-align:center;color:var(--text-muted);font-size:0.85rem;">Analysing crop image + field data to generate rotation plan...</p>';
+  setTimeout(() => {
+    area.innerHTML = `
+      <div class="result-card success-card">
+        <div class="result-tag tag-success">🔄 Optimal Rotation Plan</div>
+        <div class="result-title">3-Season Rotation Strategy</div>
+        <div class="result-body">Based on your current crop and soil type, this rotation sequence maximizes soil nitrogen replenishment, reduces fungal disease build-up, and maintains yield stability.</div>
+        <div class="rotation-chain" style="margin-top:1rem;">
+          <div class="rotation-crop">Season 1<br><strong>${current}</strong></div>
+          <span class="rotation-arrow">→</span>
+          <div class="rotation-crop">Season 2<br><strong>Green Gram</strong></div>
+          <span class="rotation-arrow">→</span>
+          <div class="rotation-crop">Season 3<br><strong>Maize</strong></div>
+        </div>
+      </div>
+      <div class="result-card">
+        <div class="result-tag tag-info">📅 Season-wise Details</div>
+        <ul class="result-steps">
+          <li><div class="step-num">1</div><div><strong>Season 1 — ${current}</strong><br>Primary cash crop. Harvest residue should be incorporated into soil to add organic matter.</div></li>
+          <li><div class="step-num">2</div><div><strong>Season 2 — Green Gram (Moong)</strong><br>Legume crop fixes atmospheric nitrogen (~80 kg N/ha). Improves soil porosity and microbiome health.</div></li>
+          <li><div class="step-num">3</div><div><strong>Season 3 — Maize</strong><br>Deep-rooted crop that breaks hardpan layer. Benefits from nitrogen fixed by previous legume crop. High yield potential.</div></li>
+        </ul>
+      </div>
+      <div class="result-card warning-card">
+        <div class="result-tag tag-warning">⚗️ Nutrient Management</div>
+        <div class="result-body">Expected soil nitrogen improvement: <strong>+35–45 kg/ha</strong> after legume phase. Reduce fertiliser input in Season 3 by approximately 30% compared to baseline. Apply zinc sulphate (25 kg/ha) before sowing Maize.</div>
+      </div>
+    `;
+  }, 2000);
+}
+
+// ===== LAND ANALYSIS =====
+function selectSoil(el, type) {
+  document.querySelectorAll('.soil-option').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function runLandAnalysis() {
+  const area = document.getElementById('land-result-area');
+  area.innerHTML = '<div class="loading-anim"><div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div></div><p style="text-align:center;color:var(--text-muted);font-size:0.85rem;">Processing soil image + parameters for complete land analysis...</p>';
+  setTimeout(() => {
+    area.innerHTML = `
+      <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:1rem;">
+        <div style="background:var(--green-50);border:1px solid var(--green-100);border-radius:var(--radius-md);padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:700;color:var(--green-800);font-family:var(--font-display);">72</div>
+          <div style="font-size:0.75rem;color:var(--green-600);margin-top:2px;">Fertility Index</div>
+        </div>
+        <div style="background:var(--teal-50);border:1px solid var(--teal-100);border-radius:var(--radius-md);padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:700;color:var(--teal-800);font-family:var(--font-display);">Good</div>
+          <div style="font-size:0.75rem;color:var(--teal-600);margin-top:2px;">Water Retention</div>
+        </div>
+        <div style="background:var(--amber-50);border:1px solid var(--amber-100);border-radius:var(--radius-md);padding:14px;text-align:center;">
+          <div style="font-size:1.4rem;font-weight:700;color:var(--amber-800);font-family:var(--font-display);">Mod.</div>
+          <div style="font-size:0.75rem;color:var(--amber-600);margin-top:2px;">Organic Load</div>
+        </div>
+      </div>
+      <div class="result-card success-card">
+        <div class="result-tag tag-success">✅ Soil Health Summary</div>
+        <div class="result-title">Black Soil — Good Condition</div>
+        <div class="result-body">Your black (regur) soil has good water-holding capacity and is rich in calcium, magnesium, and potash. Slightly alkaline pH (7.0) is well-suited for cotton, soybean and wheat cultivation.</div>
+      </div>
+      <div class="result-card">
+        <div class="result-tag tag-info">📊 Parameter Scores</div>
+        <div style="margin-top:0.5rem;">
+          <div class="confidence-row"><span class="confidence-label">Fertility</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:72%"></div></div><span class="confidence-pct">72%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Water Retention</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:80%"></div></div><span class="confidence-pct">80%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Organic Matter</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:45%;background:var(--amber-400)"></div></div><span class="confidence-pct">45%</span></div>
+          <div class="confidence-row"><span class="confidence-label">pH Suitability</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:84%"></div></div><span class="confidence-pct">84%</span></div>
+          <div class="confidence-row"><span class="confidence-label">Drainage</span><div class="confidence-bar-wrap"><div class="confidence-bar-fill" style="width:55%;background:var(--amber-400)"></div></div><span class="confidence-pct">55%</span></div>
+        </div>
+      </div>
+      <div class="result-card warning-card">
+        <div class="result-tag tag-warning">⚠️ Recommendations</div>
+        <ul class="result-steps">
+          <li><div class="step-num">1</div>Organic matter is below optimal. Add farm yard manure (10–15 tonnes/ha) before sowing season.</li>
+          <li><div class="step-num">2</div>Drainage score is moderate. Consider creating field channels or raised bed cultivation in waterlogged areas.</li>
+          <li><div class="step-num">3</div>Apply sulphur (20 kg/ha) to reduce alkalinity and improve micronutrient availability.</li>
+          <li><div class="step-num">4</div>Suitable crops: <strong>Cotton, Wheat, Soybean, Sorghum, Linseed</strong>.</li>
+        </ul>
+      </div>
+    `;
+  }, 2200);
+}
+// --- SIGNUP LOGIC ---
+document.getElementById('signup-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
+
+    // Data collect karna
+    const signupData = {
+        first_name: document.getElementById('signup-first-name').value,
+        last_name:  document.getElementById('signup-last-name').value,
+        email:      document.getElementById('signup-email').value,
+        phone:      document.getElementById('signup-phone').value,
+        state:      document.getElementById('signup-state').value,
+        password:   document.getElementById('signup-password').value
+    };
+
+    // Simple validation
+    if (!signupData.email || !signupData.password || !signupData.first_name) {
+        alert("Please fill Name, Email, and Password.");
+        return;
+    }
+
+    try {
+        // Backend request
+        const response = await fetch('http://127.0.0.1:5000/api/auth/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(signupData)
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            alert("✅ Account created successfully! Please login.");
+            showPage('page-login'); // Login page par bhej dein
+        } else {
+            alert("❌ Signup failed: " + result.message);
+        }
+    } catch (error) {
+        console.error("Backend Error:", error);
+        alert("Could not connect to server. Make sure 'python app.py' is running!");
+    }
+});
+// ... baaki pehle wala code (signup logic etc.) ...
+
+// ===== LOGIN LOGIC (Yahan paste karein) =====
+async function handleLogin() {
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
+
+    try {
+        const response = await fetch('http://127.0.0.1:5000/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('user_name', data.user.first_name);
+            alert("Welcome back, " + data.user.first_name + "!");
+            showPage('page-home'); 
+        } else {
+            alert("Login Failed: " + data.message);
+        }
+    } catch (err) {
+        alert("Server se connect nahi ho paya!");
+    }
+}
+// script tag khatam hone se pehle
+
+</script>
+</body>
+</html>
