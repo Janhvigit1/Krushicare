@@ -368,6 +368,16 @@
   .loading-dot:nth-child(3) { animation-delay: 0.3s; }
   @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-10px); } }
 
+  /* ===== DISCLAIMER BANNER ===== */
+  .disclaimer-banner {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--amber-50); border: 1px solid var(--amber-100);
+    border-radius: var(--radius-md); padding: 10px 14px;
+    margin-bottom: 1.5rem; font-size: 0.82rem; color: var(--amber-800);
+    line-height: 1.5;
+  }
+  .disclaimer-banner span.disc-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+
   /* ===== LAND ANALYSIS SPECIFIC ===== */
   .soil-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
   .soil-option {
@@ -612,7 +622,7 @@
           <svg viewBox="0 0 24 24"><path d="M12 4V2A10 10 0 0 0 2 12h2a8 8 0 0 1 8-8zM12 20v2A10 10 0 0 0 22 12h-2a8 8 0 0 1-8 8z"/><path d="M4 12H2a10 10 0 0 0 10 10v-2a8 8 0 0 1-8-8zM22 12h-2a8 8 0 0 1-8 8v2a10 10 0 0 0 10-10z" opacity=".4"/><circle cx="12" cy="12" r="3"/></svg>
         </div>
         <div class="module-title">Crop Rotation Plan</div>
-        <div class="module-desc">Generate an optimal seasonal crop rotation plan to maximize yield and maintain soil health.</div>
+        <div class="module-desc">Generate an optimal seasonal crop rotation plan to maximise yield and maintain soil health based on your crop and soil details.</div>
         <div class="module-arrow">Plan rotation <span>→</span></div>
       </div>
     </div>
@@ -646,6 +656,11 @@
         <div class="tool-header-badge">🌿 Deep Learning · CNN Model</div>
         <h2>Leaf Disease Detection</h2>
         <p>Upload a clear photo of your plant leaf. Our CNN model trained on the PlantVillage dataset will diagnose the disease.</p>
+      </div>
+
+      <div class="disclaimer-banner">
+        <span class="disc-icon">⚠️</span>
+        To ensure accuracy, the system only detects a limited selection of crops at this stage.
       </div>
 
       <div class="form-group">
@@ -724,31 +739,15 @@
       <div class="tool-header">
         <div class="tool-header-badge">🌾 Machine Learning · Random Forest</div>
         <h2>Crop Recommendation</h2>
-        <p>Upload your field/soil image and enter climate parameters. The ML model uses both visual and numerical data for accurate crop recommendations.</p>
+        <p>Enter your soil and climate parameters below. The ML model will analyse the data to recommend the best crops for your land.</p>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Upload Field / Soil Image</label>
-        <div class="upload-zone" id="crop-upload-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event,'crop')">
-          <input type="file" accept="image/*" id="crop-file-input" onchange="handleGenericUpload(event,'crop')" />
-          <div class="upload-icon">
-            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <h4>Upload a photo of your field or soil</h4>
-          <p>Aerial view, topsoil close-up, or standing crop photo · JPG, PNG up to 10MB</p>
-        </div>
-        <div class="upload-preview" id="crop-preview">
-          <img id="crop-preview-img" src="" alt="" />
-          <div class="upload-preview-info">
-            <div class="upload-preview-name" id="crop-preview-name"></div>
-            <div class="upload-preview-size" id="crop-preview-size"></div>
-          </div>
-          <button onclick="clearUpload('crop')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">✕</button>
-        </div>
-        <div class="upload-hint">📷 <span>Tip:</span> A clear soil surface photo or field overview helps the model detect soil colour, texture and moisture visually.</div>
+      <div class="disclaimer-banner">
+        <span class="disc-icon">⚠️</span>
+        To ensure accuracy, the system only detects a limited selection of crops at this stage.
       </div>
 
-      <div class="form-divider"><span>+ Numerical Parameters</span></div>
+      <div class="form-divider"><span>Soil & Climate Parameters</span></div>
 
       <div class="range-group">
         <div class="range-header">
@@ -807,8 +806,8 @@
         <div class="result-placeholder-icon">
           <svg viewBox="0 0 64 64" fill="none" stroke="#BA7517" stroke-width="2"><rect x="8" y="28" width="12" height="28" rx="2"/><rect x="26" y="20" width="12" height="36" rx="2"/><rect x="44" y="12" width="12" height="44" rx="2"/></svg>
         </div>
-        <h4>Awaiting image + parameters</h4>
-        <p>Upload a field photo, adjust the sliders to match your soil conditions, and click "Recommend Crops"</p>
+        <h4>Awaiting parameters</h4>
+        <p>Adjust the sliders to match your soil conditions and click "Recommend Crops"</p>
       </div>
     </div>
   </div>
@@ -836,31 +835,15 @@
       <div class="tool-header">
         <div class="tool-header-badge">🔄 Smart Planning · ML-Optimised</div>
         <h2>Crop Rotation Plan</h2>
-        <p>Upload an image of your current standing crop or harvested field, and fill in the details below to get a smart seasonal rotation plan.</p>
+        <p>Fill in your crop and soil details below to get a smart seasonal rotation plan optimised for your land.</p>
       </div>
 
-      <div class="form-group">
-        <label class="form-label">Upload Current Crop / Field Image</label>
-        <div class="upload-zone" id="rot-upload-zone" ondragover="event.preventDefault();this.classList.add('dragging')" ondragleave="this.classList.remove('dragging')" ondrop="handleDrop(event,'rot')">
-          <input type="file" accept="image/*" id="rot-file-input" onchange="handleGenericUpload(event,'rot')" />
-          <div class="upload-icon">
-            <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
-          </div>
-          <h4>Photo of your standing or harvested crop</h4>
-          <p>Helps identify crop health, growth stage and soil condition · JPG, PNG up to 10MB</p>
-        </div>
-        <div class="upload-preview" id="rot-preview">
-          <img id="rot-preview-img" src="" alt="" />
-          <div class="upload-preview-info">
-            <div class="upload-preview-name" id="rot-preview-name"></div>
-            <div class="upload-preview-size" id="rot-preview-size"></div>
-          </div>
-          <button onclick="clearUpload('rot')" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:4px;">✕</button>
-        </div>
-        <div class="upload-hint">📷 <span>Tip:</span> A photo of the field after harvest or current standing crop helps assess residue level and plan the next season.</div>
+      <div class="disclaimer-banner">
+        <span class="disc-icon">⚠️</span>
+        To ensure accuracy, the system only detects a limited selection of crops at this stage.
       </div>
 
-      <div class="form-divider"><span>+ Crop & Soil Details</span></div>
+      <div class="form-divider"><span>Crop & Soil Details</span></div>
 
       <div class="form-group">
         <label class="form-label">Current / Last Grown Crop</label>
@@ -920,7 +903,7 @@
           <svg viewBox="0 0 64 64" fill="none" stroke="#1D9E75" stroke-width="2"><circle cx="32" cy="32" r="24"/><path d="M32 8v8M32 48v8M8 32h8M48 32h8"/><circle cx="32" cy="32" r="8"/></svg>
         </div>
         <h4>No rotation plan yet</h4>
-        <p>Upload your crop/field image, fill in the details, then click "Generate Rotation Plan"</p>
+        <p>Fill in your crop and soil details, then click "Generate Rotation Plan"</p>
       </div>
     </div>
   </div>

@@ -19,7 +19,7 @@ def init_db():
             first_name TEXT    NOT NULL,
             last_name  TEXT    NOT NULL,
             email      TEXT    NOT NULL UNIQUE,
-            phone      TEXT,
+            phone      TEXT    NOT NULL UNIQUE,  -- UNIQUE aur NOT NULL add kiya
             state      TEXT,
             password   TEXT    NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
